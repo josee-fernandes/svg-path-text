@@ -1,15 +1,15 @@
 'use client'
 
 import { ReactLenis } from '@studio-freight/react-lenis'
-import { useScroll } from 'framer-motion'
+import { motion, useScroll } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 
 const WORD_COUNT = 7
-const OFFSET_PERCENTAGE = 85 / WORD_COUNT
+const OFFSET_PERCENTAGE = 100 / WORD_COUNT
 
 export default function Home() {
   const container = useRef<HTMLDivElement>(null)
-  const texts = useRef<SVGTextPathElement[]>([])
+  const svg = useRef<SVGSVGElement>(null)
 
   const { scrollYProgress } = useScroll({
     target: container,
@@ -18,23 +18,24 @@ export default function Home() {
 
   useEffect(() => {
     scrollYProgress.on('change', (event) => {
-      texts.current.forEach((text, i) => {
-        text.setAttribute(
-          'startOffset',
-          `${i * OFFSET_PERCENTAGE + event * OFFSET_PERCENTAGE}%`,
-        )
-      })
+      if (!svg.current) return
+
+      svg.current.style.transform = `rotate(${event * 360}deg)`
     })
   }, [scrollYProgress])
 
   return (
     <ReactLenis root>
-      <div ref={container}>
+      <div ref={container} className="overflow-x-hidden">
         <div className="h-[50vh]" />
-        <svg className="w-full" viewBox="0 0 200 200">
+        <motion.svg
+          ref={svg}
+          className="w-full fill-purple-500"
+          viewBox="0 0 200 200"
+        >
           <path
             id="curve"
-            stroke="black"
+            // stroke="black"
             fill="none"
             d="
             M 100, 100
@@ -47,9 +48,6 @@ export default function Home() {
             {[...Array(WORD_COUNT)].map((_, i) => (
               <textPath
                 key={i}
-                ref={(ref) => {
-                  if (ref) texts.current[i] = ref
-                }}
                 xlinkHref="#curve"
                 startOffset={`${i * OFFSET_PERCENTAGE}%`}
               >
@@ -57,7 +55,7 @@ export default function Home() {
               </textPath>
             ))}
           </text>
-        </svg>
+        </motion.svg>
         <div className="h-[50vh]" />
       </div>
     </ReactLenis>
