@@ -35,7 +35,7 @@ export default function Home() {
         <div className="relative">
           <motion.svg
             ref={svg}
-            className="w-full fill-purple-500 absolute top-0 left-0"
+            className="absolute left-0 top-0 w-full fill-purple-500"
             viewBox="0 0 200 200"
           >
             <path
